@@ -1,0 +1,25 @@
+---
+title: "Milestone Report - Coursera Data Science Capstone Project"
+author: "akselix"
+date: "20 December 2015"
+output: html_document
+---
+
+## Assignment
+
+This course will start with the basics, analyzing a large corpus of text documents to discover the structure in the data and how words are put together. It will cover cleaning and analyzing text data, then building and sampling from a predictive text model. Finally, you will use the knowledge you gained in data products to build a predictive text product
+
+### Milestone Report
+The goal of this report is just to display that you've gotten used to working with the data and that you are on track to create your prediction algorithm.
+
+## The Data
+The data is from a corpus called HC Corpora (www.corpora.heliohost.org). See the readme file at http://www.corpora.heliohost.org/aboutcorpus.html for details on the corpora available. This exercise uses the files named LOCALE.blogs.txt where LOCALE is the each of the four locales en_US, de_DE, ru_RU and fi_FI.
+
+## Exploratory Analysis
+
+## Text Transformations
+
+## Prediction Model
+
+
+
