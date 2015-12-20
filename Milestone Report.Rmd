@@ -15,9 +15,27 @@ The goal of this report is just to display that you've gotten used to working wi
 ## The Data
 The data is from a corpus called HC Corpora (www.corpora.heliohost.org). See the readme file at http://www.corpora.heliohost.org/aboutcorpus.html for details on the corpora available. This exercise uses the files named LOCALE.blogs.txt where LOCALE is the each of the four locales en_US, de_DE, ru_RU and fi_FI.
 
+I will be using only the english language files.
+
 ## Exploratory Analysis
 
+The files are fairly large text documents. Over 4 million lines all together.
+
+My first approach was to use the tm-package, that I had some experience with. It turned out to be too slow for this dataset, even when using samples of n/1000 . Also its data structures were just complicating the task.
+
+After that I decided to go with the [quanteda package](https://cran.r-project.org/web/packages/quanteda/vignettes/quickstart.html) as it was recommended in the course forums.
+
+The corpora available is in random order, eg. the lines in "blogs" - data are not complete posts and they don't continue with the same blog in the next line. For text prediction I decided to use sentences as the basic unit for further exploration. It also made sense to concatenate all the data into one corpus for further analysis.
+
 ## Text Transformations
+- All text to lower case
+- Remove numbers (remove tokens that consist only of numbers, but not words that start with digits, e.g. 2day)
+- Remove punctuation
+- Remove separators (spaces and variations of spaces, plus tab, newlines, and anything else in the Unicode "separator" category))
+
+
+### Nice to Have and other Pondering
+- Only change beginning of line characters to lower case and preserve other capitalization.
 
 ## Prediction Model
 
