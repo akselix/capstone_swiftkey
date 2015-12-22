@@ -5,36 +5,35 @@
 
 # Libraries and options ####
 library(readr)
+library(tidyr)
 library(dplyr)
 library(ggplot2)
 library(caTools)
 library(quanteda)
+library(markovchain)
 
 options(scipen = 999)
 
-# Prepare data ####
+# Read and prepare data ####
 
 # Read in data
 blogsRaw = read_lines('./data/en_US/en_US.blogs.txt')
 newsRaw = read_lines('./data/en_US/en_US.news.txt')
 twitterRaw = readLines('./data/en_US/en_US.twitter.txt') # Not working with readr because of an "embedded null"
+combinedRaw = c(blogsRaw, newsRaw, twitterRaw)
 
 # Sample and combine data for preliminary analysis  
 set.seed(1220)
-n = 1000
+n = 100
+combined = sample(combinedRaw, length(combinedRaw) / n)
 
-fun.sample = function(x) {
-    sample(x, length(x) / n)
-}
+# Remove unnecessary objects from environment
+# rm(blogsRaw, newsRaw, twitterRaw, combinedRaw)
 
-blogs = fun.sample(blogsRaw)
-news = fun.sample(newsRaw)
-twitter = fun.sample(twitterRaw)
-combined = c(blogs, news, twitter)
-
+# Split into train and validation sets
 split = sample.split(combined, 0.8)
 train = subset(combined, split == T)
-test = subset(combined, split == F)
+valid = subset(combined, split == F)
     
 # Transfer to quanteda corpus format and split into sentences
 fun.corpus = function(x) {
@@ -42,23 +41,60 @@ fun.corpus = function(x) {
 }
 
 train = fun.corpus(train)
-test = fun.corpus(test)
 
-# Text analysis ####
-
-# Tokenize
-fun.tokenize = function(x, ngrams = 1) {
-    x = toLower(tokenize(x,   
-                removeNumbers = T,
-                removePunct = T,
-                removeSeparators = T,
-                removeTwitter = T,
-                ngrams = ngrams,
-                simplify = T
+# Tokenize ####
+fun.tokenize = function(x, ngramSize = 1, simplify = T) {
+    toLower(tokenize(x,
+        removeNumbers = T,
+        removePunct = T,
+        removeSeparators = T,
+        removeTwitter = T,
+        ngrams = ngramSize,
+        concatenator = ' ',
+        simplify = simplify
     ) )
 }
 
-combined1 = fun.tokenize(combined)
-combined2 = fun.tokenize(combined, 2)
-combined3 = fun.tokenize(combined, 3)
+train1 = fun.tokenize(train)
+train2 = fun.tokenize(train, 2)
+train3 = fun.tokenize(train, 3)
+
+# Frequency tables ####
+dfTrain1 = data_frame(sequence = train1)
+dfTrain2 = data_frame(sequence = train2)
+dfTrain3 = data_frame(sequence = train3)
+
+fun.frequency = function(x, minCount = 5) {
+    x = x %>%
+    group_by(sequence) %>%
+    summarize(count = n()) %>%
+    filter(count > minCount) %>%
+    mutate(freq = count / nrow(x)) %>%
+    select(-count) %>%
+    arrange(desc(freq))
+}
+
+dfTrain1 = fun.frequency(dfTrain1)
+
+dfTrain2 = fun.frequency(dfTrain2, 1) %>%
+    separate(sequence, c('word1', 'nextWord'), ' ')
+
+dfTrain3 = fun.frequency(dfTrain3, 1) %>%
+    separate(sequence, c('word1', 'word2', 'nextWord'), ' ')
+
+# Prediction model ####
+
+# Testing the model ####
+
+# Prepare validation sets
+valid = fun.corpus(valid)
+
+valid2 = fun.tokenize(valid, 2, T)
+valid2 = data_frame(sequence = valid2) %>%
+    separate(sequence, c('word1', 'nextWord'), ' ')
+
+valid3 = fun.tokenize(valid, 3, T)
+valid3 = data_frame(sequence = valid3) %>%
+    separate(sequence, c('word1', 'word2', 'nextWord'), ' ')
+
 

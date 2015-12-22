@@ -1,43 +1,55 @@
 ---
-title: "Milestone Report - Coursera Data Science Capstone Project"
+title: "Milestone Report - [Coursera Data Science Capstone Project](https://www.coursera.org/course/dsscapstone)"
 author: "akselix"
 date: "20 December 2015"
 output: html_document
 ---
 
-## Assignment
+## Course Project
 
-This course will start with the basics, analyzing a large corpus of text documents to discover the structure in the data and how words are put together. It will cover cleaning and analyzing text data, then building and sampling from a predictive text model. Finally, you will use the knowledge you gained in data products to build a predictive text product
+This course starts with the basics of [NLP (Natural Language Processing)](https://en.wikipedia.org/wiki/Natural_language_processing), analyzing a large corpus of text documents to discover the structure in the data and how words are put together. It will cover cleaning and analyzing text data, then building and sampling from a predictive text model. Finally, you will use the knowledge you gained in data products to build a predictive text product.
 
 ### Milestone Report
 The goal of this report is just to display that you've gotten used to working with the data and that you are on track to create your prediction algorithm.
 
 ## The Data
-The data is from a corpus called HC Corpora (www.corpora.heliohost.org). See the readme file at http://www.corpora.heliohost.org/aboutcorpus.html for details on the corpora available. This exercise uses the files named LOCALE.blogs.txt where LOCALE is the each of the four locales en_US, de_DE, ru_RU and fi_FI.
+The data is from a corpus called [HC Corpora](http://www.corpora.heliohost.org/aboutcorpus.html). This exercise uses the files named LOCALE.blogs.txt where LOCALE is the each of the four locales en_US, de_DE, ru_RU and fi_FI.
 
 I will be using only the english language files.
 
 ## Exploratory Analysis
 
-The files are fairly large text documents. Over 4 million lines all together.
+The data are large text files. Over 4 million lines all together.
+```
 
-My first approach was to use the tm-package, that I had some experience with. It turned out to be too slow for this dataset, even when using samples of n/1000 . Also its data structures were just complicating the task.
+```
 
-After that I decided to go with the [quanteda package](https://cran.r-project.org/web/packages/quanteda/vignettes/quickstart.html) as it was recommended in the course forums.
+Exploring the the data visually, it became clear that the data are in random order, eg. the lines in "blogs" - file are not complete posts and they don't continue with the same blog in the next line. For text prediction I decided to use sentences as the basic unit for further exploration and modelling.
 
-The corpora available is in random order, eg. the lines in "blogs" - data are not complete posts and they don't continue with the same blog in the next line. For text prediction I decided to use sentences as the basic unit for further exploration. It also made sense to concatenate all the data into one corpus for further analysis.
+### Basic summaries of the data
+
 
 ## Text Transformations
+
+My first approach was to use the tm-package to trasform and analyse the corpora. It turned out to be quite slow with this magnitude of data, even when using samples of n/1000. Also its data structures were complicating the task. Right now I am working with [quanteda package](https://cran.r-project.org/web/packages/quanteda/vignettes/quickstart.html). It seems to be faster and more user friendly for basic text trasnformation needed in this assignment. It also comes recommended in the course forums.
+
+### Text ransformations I am currently thinking and trying
 - All text to lower case
-- Remove numbers (remove tokens that consist only of numbers, but not words that start with digits, e.g. 2day)
+    - it could be best to ignore capital letters in the beginning of sentence, but keep them elsewhere
+- Remove numbers
+    - remove tokens that consist only of numbers, but not words that start with digits, e.g. 2day)
 - Remove punctuation
-- Remove separators (spaces and variations of spaces, plus tab, newlines, and anything else in the Unicode "separator" category))
+    - coud be useful with advanced algorhitms, but with simple ngram-model causes too many sequences.
+- Remove separators
+    - spaces and variations of spaces, plus tab, newlines, and anything else in the Unicode "separator" category
+- Remove Twitter characters
+    - (@ and #)
 
-
-### Nice to Have and other Pondering
-- Only change beginning of line characters to lower case and preserve other capitalization.
+### Ngrams
 
 ## Prediction Model
+
+## Shiny app
 
 
 
