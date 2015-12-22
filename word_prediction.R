@@ -4,9 +4,10 @@
 # 2015-12-20
 
 # Libraries and options ####
-
+library(readr)
 library(dplyr)
 library(ggplot2)
+library(caTools)
 library(quanteda)
 
 options(scipen = 999)
@@ -14,35 +15,34 @@ options(scipen = 999)
 # Prepare data ####
 
 # Read in data
-blogsRaw = readLines('./data/en_US/en_US.blogs.txt')
-newsRaw = readLines('./data/en_US/en_US.news.txt')
-twitterRaw = readLines('./data/en_US/en_US.twitter.txt')
+blogsRaw = read_lines('./data/en_US/en_US.blogs.txt')
+newsRaw = read_lines('./data/en_US/en_US.news.txt')
+twitterRaw = readLines('./data/en_US/en_US.twitter.txt') # Not working with readr because of an "embedded null"
 
-# Sample the data for preliminary analysis, split into sentences and transfer into quanteda corpus format 
+# Sample and combine data for preliminary analysis  
 set.seed(1220)
 n = 1000
 
+fun.sample = function(x) {
+    sample(x, length(x) / n)
+}
+
+blogs = fun.sample(blogsRaw)
+news = fun.sample(newsRaw)
+twitter = fun.sample(twitterRaw)
+combined = c(blogs, news, twitter)
+
+split = sample.split(combined, 0.8)
+train = subset(combined, split == T)
+test = subset(combined, split == F)
+    
+# Transfer to quanteda corpus format and split into sentences
 fun.corpus = function(x) {
-    corpus(unlist(segment(sample(x, length(x) / n), 'sentence')))
+    corpus(unlist(segment(x, 'sentence')))
 }
 
-blogs = fun.corpus(blogsRaw)
-news = fun.corpus(newsRaw)
-twitter = fun.corpus(twitterRaw)
-combined = blogs + news + twitter
-
-# Exploratory analysis ####
-
-# Length of vectors
-length(blogsRaw) + length(newsRaw) + length(twitterRaw)
-
-# Character counts per line
-fun.summary = function(x) {
-    minChar = min(nchar(x))
-    meanChar = mean(nchar(x))
-    maxChar = max(nchar(x))
-    return(list(minChar, meanChar, maxChar))
-}
+train = fun.corpus(train)
+test = fun.corpus(test)
 
 # Text analysis ####
 
