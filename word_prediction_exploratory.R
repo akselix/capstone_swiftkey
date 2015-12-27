@@ -37,10 +37,12 @@ dfFreq = bind_rows(dfTrain1[1:plotMax, ],
         )
 
 dfFreq$sequence = factor(dfFreq$sequence, levels = dfFreq$sequence[order(dfFreq$freq, decreasing = T)])
+dfFreq$ngram = factor(dfFreq$ngram, levels = c('unigram', 'bigram', 'trigram'))
 
 ggplot(dfFreq, aes(x = sequence, y = freq)) +
     geom_point(aes(color = ngram)) +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
-    labs(title = 'Frequency of Top 20 Sequencies with Different Ngrams', x = 'Sequence', y = 'Frequency')
+    scale_y_continuous(limits = c(0.0001, 0.06), breaks = seq(0.000, 0.1, 0.01)) +
+    labs(title = 'Top 20 Sequencies within Ngram Groups', x = 'Sequence', y = 'Frequency')
     
     
