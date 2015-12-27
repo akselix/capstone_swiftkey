@@ -23,11 +23,8 @@ combinedRaw = c(blogsRaw, newsRaw, twitterRaw)
 
 # Sample and combine data for preliminary analysis  
 set.seed(1220)
-n = 1/100
+n = 1/1000
 combined = sample(combinedRaw, length(combinedRaw) * n)
-
-# Remove unnecessary objects from environment
-# rm(blogsRaw, newsRaw, twitterRaw, combinedRaw)
 
 # Split into train and validation sets
 split = sample.split(combined, 0.8)
@@ -59,26 +56,26 @@ train2 = fun.tokenize(train, 2)
 train3 = fun.tokenize(train, 3)
 
 # Frequency tables ####
-dfTrain1 = data_frame(sequence = train1)
-dfTrain2 = data_frame(sequence = train2)
-dfTrain3 = data_frame(sequence = train3)
-
 fun.frequency = function(x, minCount = 5) {
     x = x %>%
     group_by(sequence) %>%
     summarize(count = n()) %>%
-    filter(count > minCount) %>%
-    mutate(freq = count / nrow(x)) %>%
+    filter(count >= minCount)
+    x = x %>% 
+    mutate(freq = count / sum(x$count)) %>% 
     select(-count) %>%
     arrange(desc(freq))
 }
 
+dfTrain1 = data_frame(sequence = train1)
 dfTrain1 = fun.frequency(dfTrain1)
 
-dfTrain2 = fun.frequency(dfTrain2, 1) %>%
+dfTrain2 = data_frame(sequence = train2)
+dfTrain2 = fun.frequency(dfTrain2, 2) %>%
     separate(sequence, c('word1', 'nextWord'), ' ')
 
-dfTrain3 = fun.frequency(dfTrain3, 1) %>%
+dfTrain3 = data_frame(sequence = train3)
+dfTrain3 = fun.frequency(dfTrain3, 2) %>%
     separate(sequence, c('word1', 'word2', 'nextWord'), ' ')
 
 # Prediction model ####

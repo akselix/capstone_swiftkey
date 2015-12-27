@@ -4,11 +4,12 @@ author: "akselix"
 date: "20 December 2015"
 output: 
     html_document:
-      theme: cosmo
+      theme: flatly
 ---
 
-```{r, echo= F, warning= F}
+```{r Options, echo= F, warning= F, message= F}
 # Libraries and options ####
+library(knitr)
 library(readr)
 library(tidyr)
 library(dplyr)
@@ -31,7 +32,7 @@ The data is from a corpus called [HC Corpora](http://www.corpora.heliohost.org/a
 
 I will be using only the english language files.
 
-```{r, echo= F, warning= F}
+```{r Read Data, echo= F, warning= F}
 blogsRaw = read_lines('./data/en_US/en_US.blogs.txt')
 newsRaw = read_lines('./data/en_US/en_US.news.txt')
 twitterRaw = readLines('./data/en_US/en_US.twitter.txt') # Not working with readr because of an "embedded null"
@@ -46,11 +47,13 @@ Exploring the the data visually, it became clear that the data are in random ord
 
 ### Summary of Raw Files
 
-```{r, echo = F, warning = F}
+```{r Summary, echo = F, warning = F}
 # Basic summary
 rawSummary = data.frame(lineCount = c(length(blogsRaw), length(newsRaw), length(twitterRaw), length(combinedRaw)),
            medianNchar = c(median(nchar(blogsRaw)), median(nchar(newsRaw)), median(nchar(twitterRaw)), median(nchar(combinedRaw))),
            row.names = c('Blogs', 'News', 'Twitter', 'Combined'))
+
+kable(rawSummary)
 ```
 
 
@@ -78,7 +81,7 @@ Transformations are currently the most memory intensive tasks. When the shiny ap
 
 Ngrams are easy to build with the quanteda package. I have been using unigrams (which are basically useless for prediction), bigrams and trigrams. I might add a 4-gram. One decision is what sparsity level to use. Now I have settled with removing all bigrams with less than 6 occurences and bigrams and trigrams with less than two occurences.
 
-```{r, echo = F, warning = F}
+```{r Frequency Tables, echo = F, warning = F}
 # Sample and combine data for preliminary analysis  
 set.seed(1220)
 n = 1/100
@@ -139,7 +142,7 @@ dfTrain3 = fun.frequency(dfTrain3, 1) %>%
 
 #### When using a 1/100 random sample from combined raw data, below are the top 20 ngrams. The frequencies are quite small, so it will probably make sense to use smaller sample size to save computing resources.
 
-```{r, echo = F, warning = F}
+```{r Plots, echo = F, warning = F}
 plotMax = 20
 dfFreq = bind_rows(dfTrain1[1:plotMax, ], 
                     unite(dfTrain2[1:plotMax, ], 'sequence', word1, nextWord, sep = ' '),
@@ -154,6 +157,8 @@ plotFreq = ggplot(dfFreq, aes(x = sequence, y = freq)) +
     geom_point(aes(color = ngram)) +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
     labs(title = 'Frequency of Top 20 Sequencies with Different Ngrams', x = 'Sequence', y = 'Frequency')
+
+plotFreq
 ```
 
 
