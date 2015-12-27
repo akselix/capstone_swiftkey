@@ -7,7 +7,6 @@
 library(readr)
 library(tidyr)
 library(dplyr)
-library(ggplot2)
 library(caTools)
 library(quanteda)
 library(markovchain)
@@ -24,8 +23,8 @@ combinedRaw = c(blogsRaw, newsRaw, twitterRaw)
 
 # Sample and combine data for preliminary analysis  
 set.seed(1220)
-n = 100
-combined = sample(combinedRaw, length(combinedRaw) / n)
+n = 1/100
+combined = sample(combinedRaw, length(combinedRaw) * n)
 
 # Remove unnecessary objects from environment
 # rm(blogsRaw, newsRaw, twitterRaw, combinedRaw)
@@ -84,7 +83,7 @@ dfTrain3 = fun.frequency(dfTrain3, 1) %>%
 
 # Prediction model ####
 
-# Testing the model ####
+# Validation ####
 
 # Prepare validation sets
 valid = fun.corpus(valid)

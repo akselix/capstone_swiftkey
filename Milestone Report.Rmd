@@ -2,8 +2,22 @@
 title: "Milestone Report - [Coursera Data Science Capstone Project](https://www.coursera.org/course/dsscapstone)"
 author: "akselix"
 date: "20 December 2015"
-output: html_document
+output: 
+    html_document:
+      theme: cosmo
 ---
+
+```{r, echo= F, warning= F}
+# Libraries and options ####
+library(readr)
+library(tidyr)
+library(dplyr)
+library(caTools)
+library(quanteda)
+library(ggplot2)
+
+options(scipen = 999)
+```
 
 ## Course Project
 
@@ -17,23 +31,37 @@ The data is from a corpus called [HC Corpora](http://www.corpora.heliohost.org/a
 
 I will be using only the english language files.
 
+```{r, echo= F, warning= F}
+blogsRaw = read_lines('./data/en_US/en_US.blogs.txt')
+newsRaw = read_lines('./data/en_US/en_US.news.txt')
+twitterRaw = readLines('./data/en_US/en_US.twitter.txt') # Not working with readr because of an "embedded null"
+combinedRaw = c(blogsRaw, newsRaw, twitterRaw)
+```
+
 ## Exploratory Analysis
 
-The data are large text files. Over 4 million lines all together.
-```
-
-```
+The data are large text files. Over 4 million lines combined. Unix wordcount gives 102,081,616 individual words.
 
 Exploring the the data visually, it became clear that the data are in random order, eg. the lines in "blogs" - file are not complete posts and they don't continue with the same blog in the next line. For text prediction I decided to use sentences as the basic unit for further exploration and modelling.
 
-### Basic summaries of the data
+### Summary of Raw Files
+
+```{r, echo = F, warning = F}
+# Basic summary
+rawSummary = data.frame(lineCount = c(length(blogsRaw), length(newsRaw), length(twitterRaw), length(combinedRaw)),
+           medianNchar = c(median(nchar(blogsRaw)), median(nchar(newsRaw)), median(nchar(twitterRaw)), median(nchar(combinedRaw))),
+           row.names = c('Blogs', 'News', 'Twitter', 'Combined'))
+```
 
 
 ## Text Transformations
 
-My first approach was to use the tm-package to trasform and analyse the corpora. It turned out to be quite slow with this magnitude of data, even when using samples of n/1000. Also its data structures were complicating the task. Right now I am working with [quanteda package](https://cran.r-project.org/web/packages/quanteda/vignettes/quickstart.html). It seems to be faster and more user friendly for basic text trasnformation needed in this assignment. It also comes recommended in the course forums.
+My first approach was to use the tm-package to trasform and analyse the corpora to useful units (tokenizing). It turned out to be quite slow with this magnitude of data, even when using samples of n/1000. Also its data structures were complicating the task. Right now I am working with [quanteda package](https://cran.r-project.org/web/packages/quanteda/vignettes/quickstart.html). It seems to be faster and more user friendly for basic text trasnformation needed in this assignment. It also comes recommended in the course forums.
 
-### Text ransformations I am currently thinking and trying
+Transformations are currently the most memory intensive tasks. When the shiny app is running, I will have to see how long does the code take to run with different parameters and how well it performs. Maybe it is not feasible to read raw data into memory in Shiny, but to do the transformations on my computer and save the intermediate data to disk or database and and use that with the prediction algorithm. I Have to check the course pages to see if that is allowed.
+
+### Text Transformations I am currently trying
+
 - All text to lower case
     - it could be best to ignore capital letters in the beginning of sentence, but keep them elsewhere
 - Remove numbers
@@ -43,13 +71,99 @@ My first approach was to use the tm-package to trasform and analyse the corpora.
 - Remove separators
     - spaces and variations of spaces, plus tab, newlines, and anything else in the Unicode "separator" category
 - Remove Twitter characters
-    - (@ and #)
+    - ie.(@ and #)
+- Profanity filtering
 
 ### Ngrams
 
+Ngrams are easy to build with the quanteda package. I have been using unigrams (which are basically useless for prediction), bigrams and trigrams. I might add a 4-gram. One decision is what sparsity level to use. Now I have settled with removing all bigrams with less than 6 occurences and bigrams and trigrams with less than two occurences.
+
+```{r, echo = F, warning = F}
+# Sample and combine data for preliminary analysis  
+set.seed(1220)
+n = 1/100
+combined = sample(combinedRaw, length(combinedRaw) * n)
+
+# Split into train and validation sets
+split = sample.split(combined, 0.8)
+train = subset(combined, split == T)
+valid = subset(combined, split == F)
+    
+# Transfer to quanteda corpus format and split into sentences
+fun.corpus = function(x) {
+    corpus(unlist(segment(x, 'sentence')))
+}
+
+train = fun.corpus(train)
+
+# Tokenize ####
+fun.tokenize = function(x, ngramSize = 1, simplify = T) {
+    toLower(tokenize(x,
+        removeNumbers = T,
+        removePunct = T,
+        removeSeparators = T,
+        removeTwitter = T,
+        ngrams = ngramSize,
+        concatenator = ' ',
+        simplify = simplify
+    ) )
+}
+
+train1 = fun.tokenize(train)
+train2 = fun.tokenize(train, 2)
+train3 = fun.tokenize(train, 3)
+
+# Frequency tables ####
+dfTrain1 = data_frame(sequence = train1)
+dfTrain2 = data_frame(sequence = train2)
+dfTrain3 = data_frame(sequence = train3)
+
+fun.frequency = function(x, minCount = 5) {
+    x = x %>%
+    group_by(sequence) %>%
+    summarize(count = n()) %>%
+    filter(count > minCount) %>%
+    mutate(freq = count / nrow(x)) %>%
+    select(-count) %>%
+    arrange(desc(freq))
+}
+
+dfTrain1 = fun.frequency(dfTrain1)
+
+dfTrain2 = fun.frequency(dfTrain2, 1) %>%
+    separate(sequence, c('word1', 'nextWord'), ' ')
+
+dfTrain3 = fun.frequency(dfTrain3, 1) %>%
+    separate(sequence, c('word1', 'word2', 'nextWord'), ' ')
+```
+
+#### When using a 1/100 random sample from combined raw data, below are the top 20 ngrams. The frequencies are quite small, so it will probably make sense to use smaller sample size to save computing resources.
+
+```{r, echo = F, warning = F}
+plotMax = 20
+dfFreq = bind_rows(dfTrain1[1:plotMax, ], 
+                    unite(dfTrain2[1:plotMax, ], 'sequence', word1, nextWord, sep = ' '),
+                    unite(dfTrain3[1:plotMax, ], 'sequence', word1, word2, nextWord, sep = ' ')
+                    ) %>%
+                        mutate(ngram = rep(c('unigram', 'bigram', 'trigram'), each = plotMax)
+        )
+
+dfFreq$sequence = factor(dfFreq$sequence, levels = dfFreq$sequence[order(dfFreq$freq, decreasing = T)])
+
+plotFreq = ggplot(dfFreq, aes(x = sequence, y = freq)) +
+    geom_point(aes(color = ngram)) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) +
+    labs(title = 'Frequency of Top 20 Sequencies with Different Ngrams', x = 'Sequence', y = 'Frequency')
+```
+
+
 ## Prediction Model
 
+Here my first approach is to use data.tables with tokenized words in their own columns and a probability associated with that word sequence. Search for the input phrae is performed using "Supid Backoff" - method. The logic is to first see if there is a match in the highest ngram, then checking the next highest, ending in a unigram, which always predicts the most common words ("the" being the most common). There are some better algorithms that I might try to implement if time permits.
+
 ## Shiny app
+
+I would like the shiny app to show five best next word predictions for a given phrase. Nice-to-have would be a chart comparing their probability. Selectors could include how many previous words to use in the prediction and maybe some charting options.
 
 
 
