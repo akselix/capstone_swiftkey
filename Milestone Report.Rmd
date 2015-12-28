@@ -1,7 +1,6 @@
 ---
 title: "Milestone Report - [Coursera Data Science Capstone Project](https://www.coursera.org/course/dsscapstone)"
-author: "akselix"
-date: "20 December 2015"
+date: "28 December 2015"
 output: 
     html_document:
       highlight: monochrome
@@ -44,7 +43,7 @@ combinedRaw = c(blogsRaw, newsRaw, twitterRaw)
 
 The data are large text files. Over 4 million lines combined. Unix wordcount gives 102,081,616 individual words.
 
-Exploring the the data visually, it is clear that the data are in random order, eg. the lines in "Blogs" - file are not complete posts and lines are not in sequeantial order. For text prediction I decided to use sentences as the basic units for further exploration and modelling.
+Exploring the the data visually, it is clear that the data are in random order, eg. the lines in "Blogs" - file are not complete posts and lines are not in sequeantial order. For text prediction I decided to split sentences to lines for further transformations and modelling.
 
 ### Summary of Raw Files
 
@@ -77,10 +76,11 @@ Transformations are currently the most memory intensive tasks. When the shiny ap
 - Remove Twitter characters
     - ie.(@ and #)
 - Profanity filtering
+- Filtering foreign language
 
 ### Ngrams
 
-Ngrams are easy to build with the quanteda package. I have been using unigrams (which are basically useless for prediction), bigrams and trigrams. I might add a 4-gram. One decision is what sparsity level to use. Now I have settled with removing all ngrams with less than 5 occurences.
+Ngrams are easy to build with the quanteda package. I have been using unigrams (which are basically useless for prediction), bigrams and trigrams. I might add a 4-gram. One decision is what sparsity level to use to get the best coverage of normal language with the least amount of data.
 
 ```{r Frequency Tables, echo = F, warning = F, message= F, error= F}
 # Sample and combine data for preliminary analysis  
@@ -141,7 +141,7 @@ dfTrain3 = fun.frequency(dfTrain3, 5) %>%
     separate(sequence, c('word1', 'word2', 'nextWord'), ' ')
 ```
 
-Using a 1/100 random sample from combined raw data, below are the top 20 sequences in each ngram group. Comparing those to the total number in each group with the given parameters (sequence has to occur at least five times), we get the frquencies. I ran the same analysis, with different sample sizes and the resulting sequencies and their frequencies didn't change too much.
+Using a 1/100 random sample from combined raw data, below are the top 20 sequences in each ngram group. Comparing those to the total number in each group with the given parameters (sequence has to occur at least five times), we get the frquencies. I ran the same analysis, with different sample sizes and the resulting sequencies and their frequencies didn't change too much. The challenge is to get the frequencies bigger, meaning more coverage with less data.
 
 ```{r Plots, echo = F, warning = F, message= F, fig.width=10, fig.height=6}
 plotMax = 20
