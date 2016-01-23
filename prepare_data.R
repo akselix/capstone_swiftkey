@@ -1,6 +1,6 @@
-# word_prediction.R ####
+# prepare_data.R ####
 # Coursera Data Science Capstone Project (https://www.coursera.org/course/dsscapstone)
-# Model for predicting a next word from input text
+# Prepare data for use and save in RData format
 # 2015-12-20
 
 # Libraries and options ####
@@ -9,7 +9,6 @@ library(tidyr)
 library(dplyr)
 library(caTools)
 library(quanteda)
-library(markovchain)
 
 options(scipen = 999)
 
@@ -78,8 +77,6 @@ dfTrain3 = data_frame(sequence = train3)
 dfTrain3 = fun.frequency(dfTrain3, 1) %>%
     separate(sequence, c('word1', 'word2', 'nextWord'), ' ')
 
-# Prediction model ####
-
 # Validation ####
 
 # Prepare validation sets
@@ -93,4 +90,8 @@ valid3 = fun.tokenize(valid, 3, T)
 valid3 = data_frame(sequence = valid3) %>%
     separate(sequence, c('word1', 'word2', 'nextWord'), ' ')
 
+# Save Data ####
+save(dfTrain1, file = 'shiny/data/dfTrain1.rds')
+save(dfTrain2, file = 'shiny/data/dfTrain2.rds')
+save(dfTrain3, file = 'shiny/data/dfTrain3.rds')
 
