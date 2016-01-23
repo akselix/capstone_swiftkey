@@ -1,0 +1,23 @@
+# ui.R ####
+# Coursera Data Science Capstone Project (https://www.coursera.org/course/dsscapstone)
+# Shiny UI script
+# 2016-01-23
+
+# Libraries and options ####
+library(shiny)
+
+# Define the Application ####
+shinyUI(fluidPage(
+    # Application title
+    titlePanel("Word Prediction"),
+    # Page layout
+    #sidebarLayout(
+       #sidebarPanel( "sidebar panel"),
+        #mainPanel("main panel") )
+    textInput("text", label = h3("Text input"), value = "Enter text..."),
+    
+    hr(),
+    fluidRow(column(3, verbatimTextOutput("value")))
+) )
+        
+        
