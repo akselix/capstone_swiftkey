@@ -10,14 +10,11 @@ library(shiny)
 shinyUI(fluidPage(
     # Application title
     titlePanel("Word Prediction"),
-    # Page layout
-    #sidebarLayout(
-       #sidebarPanel( "sidebar panel"),
-        #mainPanel("main panel") )
+        
+    # Text input
     textInput("text", label = h3("Text input"), value = "Enter text..."),
-    
+        
     hr(),
     fluidRow(column(3, verbatimTextOutput("value")))
-) )
         
-        
+    ))

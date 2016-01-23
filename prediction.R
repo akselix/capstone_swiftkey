@@ -3,35 +3,37 @@
 # Script for predicting a next word given a input of multiple words
 # 2016-01-23
 
-# Parameters
+# Parameters ####
 
 # How many words to suggest
-number_of_suggestions = 3
+numberOfSuggestions = 3
 
-# Parse individual tokens from input text
-inputText = 'I love Twitter very much'
-inputWords = head(data_frame(input1 = fun.tokenize(corpus(inputText))), 3)
-input1 = inputWords[1, ]
-input2 = inputWords[2, ]
-input3 = inputWords[3, ]
+# Input text
+inputText = 'What is this?'
+# Parse individual tokens from input text ####
+inputWords = data_frame(word = fun.tokenize(corpus(inputText)))
+input1 = tail(inputWords, 2)[1, ]
+input2 = tail(inputWords, 1)
 
+# Prediction with lazy backoff algorithm ####
 
-# Prediction with lazy backoff algorithm
+# Predict using 3-gram model
+fun.predict3 = function(input1 = input1, input2 = input2) {
+    if(input1 %in% dfTrain3$word1 & input2 %in% dfTrain3$word2) {
+        prediction = dfTrain3 %>%
+            filter(word1 %in% input1 & word2 %in%input2) %>%
+            select(nextWord, freq) %>%
+            top_n(numberOfSuggestions, wt = freq)
+    }
+}
 
-fun.predict2 = function(input) {
-    if(input %in% dfTrain2$word1) {
+# Predict using 2-gram model
+fun.predict2 = function(input2 = input2) {
+    if(input2 %in% dfTrain2$word1) {
         prediction = dfTrain2 %>%
-        filter(word1 %in% input1) %>%
-        select(nextWord) %>%
-        top_n(number_of_suggestions, wt = nextWord)
+            filter(word1 %in% input2) %>%
+            select(nextWord, freq) %>%
+            top_n(numberOfSuggestions, wt = freq)
         }
 }
 
-fun.predict3 = function(input) {
-    if(input %in% dfTrain2$word1) {
-        prediction = dfTrain2 %>%
-            filter(word1 %in% input1) %>%
-            select(nextWord) %>%
-            top_n(number_of_suggestions, wt = nextWord)
-    }
-}
