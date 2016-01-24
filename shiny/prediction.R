@@ -10,7 +10,7 @@ numberOfSuggestions = 3
 
 # Input text ####
 
-inputText = 'According to?'
+inputText = 'wha the fudge'
 
 # Functions from prepare_data.R for tokenazing the input exactly as the training data
 # Transfer to quanteda corpus format and split into sentences
@@ -34,6 +34,7 @@ fun.tokenize = function(x, ngramSize = 1, simplify = T) {
 inputWords = data_frame(word = fun.tokenize(corpus(inputText)))
 input1 = tail(inputWords, 2)[1, ]
 input2 = tail(inputWords, 1)
+
 
 # Prediction algorithm using stupid back off model ####
 
@@ -65,5 +66,5 @@ fun.predict = function(x = NULL, y = NULL) {
                     top_n(numberOfSuggestions, wt = freq) %>%
                     select(sequence)
                 }
-print(prediction)
+return(prediction)
 }

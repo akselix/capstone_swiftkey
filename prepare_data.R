@@ -91,7 +91,7 @@ valid3 = data_frame(sequence = valid3) %>%
     separate(sequence, c('word1', 'word2', 'nextWord'), ' ')
 
 # Save Data ####
-save(dfTrain1, file = 'shiny/data/dfTrain1.rds')
-save(dfTrain2, file = 'shiny/data/dfTrain2.rds')
-save(dfTrain3, file = 'shiny/data/dfTrain3.rds')
+saveRDS(dfTrain1, file = 'shiny/data/dfTrain1.rds')
+saveRDS(dfTrain2, file = 'shiny/data/dfTrain2.rds')
+saveRDS(dfTrain3, file = 'shiny/data/dfTrain3.rds')
 

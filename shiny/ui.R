@@ -16,11 +16,12 @@ shinyUI(fluidPage(
     
     sidebarPanel(
     # Text input
-    textInput("text", label = h3("Text input"), value = "Enter text...")
+    textInput("text", label = h3("Text input"), value = "What the fuck")
     ),
     
     mainPanel(
-    hr(),
-    fluidRow(column(3, verbatimTextOutput("value")))
+    tableOutput('predictedWords')
+    #hr(),
+    #fluidRow(column(3, verbatimTextOutput("value")))
     )
 ))
