@@ -5,23 +5,19 @@
 
 # Libraries and options ####
 library(shiny)
-library(dplyr)
-library(quanteda)
 
 # Define the Application ####
 
 shinyUI(fluidPage(
     # Application title
-    titlePanel("Word Prediction"),
+    titlePanel("Word Predictor"),
     
     sidebarPanel(
     # Text input
-    textInput("text", label = h3("Text input"), value = "What the fuck")
+    textInput("text", label = h3("Please write some text"), value = "")
     ),
     
     mainPanel(
     tableOutput('predictedWords')
-    #hr(),
-    #fluidRow(column(3, verbatimTextOutput("value")))
     )
 ))
