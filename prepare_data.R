@@ -20,7 +20,7 @@ newsRaw = read_lines('./data/en_US/en_US.news.txt')
 twitterRaw = readLines('./data/en_US/en_US.twitter.txt') # Not working with readr because of an "embedded null"
 combinedRaw = c(blogsRaw, newsRaw, twitterRaw)
 
-# Sample and combine data for preliminary analysis  
+# Sample and combine data  
 set.seed(1220)
 n = 1/10000
 combined = sample(combinedRaw, length(combinedRaw) * n)
@@ -67,7 +67,7 @@ fun.frequency = function(x, minCount = 5) {
 }
 
 dfTrain1 = data_frame(sequence = train1)
-dfTrain1 = fun.frequency(dfTrain1)
+dfTrain1 = head(fun.frequency(dfTrain1))
 
 dfTrain2 = data_frame(sequence = train2)
 dfTrain2 = fun.frequency(dfTrain2, 1) %>%
