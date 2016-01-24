@@ -22,7 +22,7 @@ combinedRaw = c(blogsRaw, newsRaw, twitterRaw)
 
 # Sample and combine data  
 set.seed(1220)
-n = 1/10
+n = 1/1000
 combined = sample(combinedRaw, length(combinedRaw) * n)
 
 # Split into train and validation sets

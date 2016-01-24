@@ -3,20 +3,21 @@
 # Script for predicting a NextWord given a input of multiple words
 # 2016-01-23
 
+# Libraries and options ####
+
 # Parameters ####
 
 # How many words to suggest
 numberOfSuggestions = 5
 
 # Input text ####
-
 inputText = 'how are you'
 
-# Functions from prepare_data.R for tokenazing the input exactly as the training data
 # Transfer to quanteda corpus format and split into sentences
 fun.corpus = function(x) {
     corpus(unlist(segment(x, 'sentence')))
 }
+
 # Tokenize
 fun.tokenize = function(x, ngramSize = 1, simplify = T) {
     toLower(tokenize(x,
@@ -51,6 +52,10 @@ fun.inputWords = function(x) {
     return(list(input1, input2))
 }
 
+inputs = fun.inputWords(fun.input(inputText))
+input1 = unlist(inputs[1]) 
+input2 = unlist(inputs[2])
+
 # Prediction algorithm using stupid back off model ####
 fun.predict = function(x = NULL, y = NULL) {
 
@@ -79,3 +84,4 @@ fun.predict = function(x = NULL, y = NULL) {
 return(head(prediction, numberOfSuggestions))
 }
 
+fun.predict(input1, input2)
