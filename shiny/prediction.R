@@ -4,7 +4,8 @@
 # 2016-01-23
 
 # Libraries and options ####
-source('prepare_data.R')
+
+# source('prepare_data.R')
 
 options(scipen=999)
 
@@ -12,15 +13,15 @@ options(scipen=999)
 
 # How many words to suggest
 numberOfSuggestions = 5
-# Input text
-inputText = 'according to us'
+# Input text sample 
+inputText = 'Significant things!?!'
 
-# Parse tokens from input text ####
+# Parse last two tokens from input text ####
 
-fun.input = function(inputText) {
+fun.input = function(x) {
     
     # Tokenize with same function as training data
-    y = data_frame(word = fun.tokenize(corpus(inputText)))
+    y = data_frame(word = fun.tokenize(corpus(x)))
     
     # Handle empty input
     if(nrow(y) == 0) {
@@ -37,52 +38,54 @@ fun.input = function(inputText) {
                 input2 = tail(y, 1)
             }
     
-    # Return list of inputs 
+    # Return data frame of inputs 
     inputs = data_frame(words = unlist(rbind(input1, input2)))
 return(inputs)
 }
 
 # Get inputs as separate strings
-input1 = as.character(inputs[1, ])
-input2 = as.character(inputs[2, ])
+input1 = fun.input()[1, ]
+input2 = fun.input()[2, ]
 
 # Predict using stupid back off model ####
 
-fun.predict = function(...) {
+fun.predict = function(x, y) {
     
-    # Predict giving just the top 1-gram words if no input given
-    if(x == "" |  y == "") {
+    # Predict giving just the top 1-gram words, if no input given
+    if(x == "" & y == "") {
         prediction = dfTrain1 %>%
             select(NextWord) %>%
-            top_n(numberOfSuggestions)
-    }
+            filter(row_number() <= numberOfSuggestions)
+            
         # Predict using 3-gram model
-        if(input1 %in% dfTrain3$word1 & input2 %in% dfTrain3$word2) {
+    }   else if(x %in% dfTrain3$word1 & y %in% dfTrain3$word2) {
             prediction = dfTrain3 %>%
-                filter(word1 %in% input1 & word2 %in% input2) %>%
+                filter(word1 %in% x & word2 %in% y) %>%
                 select(NextWord) %>%
-                top_n(numberOfSuggestions)
+                filter(row_number() <= numberOfSuggestions)
         
             # Predict using 2-gram model
-        }   else if(input2 %in% dfTrain2$word1) {
+        }   else if(y %in% dfTrain2$word1) {
                 prediction = dfTrain2 %>%
-                    filter(word1 %in% input2) %>%
+                    filter(word1 %in% y) %>%
                     select(NextWord) %>%
-                    top_n(numberOfSuggestions)
-        
+                    filter(row_number() <= numberOfSuggestions)
+                
                 # If no prediction found, Predict giving just the top 1-gram words
             }   else{
-                prediction = dfTrain1 %>%
-                    select(NextWord) %>%
-                    top_n(numberOfSuggestions)
+                    prediction = dfTrain1 %>%
+                        select(NextWord) %>%
+                        filter(row_number() <= numberOfSuggestions)
                 }
     
 # Return predicted word in a data frame
 return(prediction)
 }
 
-
-
+# Predictions ####
+input1 = fun.input(inputText)[1, ]
+input2 = fun.input(inputText)[2, ]
+fun.predict(input1, input2)
 
 
 

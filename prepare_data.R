@@ -15,8 +15,8 @@ options(scipen = 999)
 # Read and prepare data ####
 
 # Read in data
-blogsRaw = readLines('./data/en_US/en_US.blogs.txt')
-newsRaw = readLines('./data/en_US/en_US.news.txt')
+blogsRaw = read_lines('./data/en_US/en_US.blogs.txt')
+newsRaw = read_lines('./data/en_US/en_US.news.txt')
 twitterRaw = readLines('./data/en_US/en_US.twitter.txt') # Not working with readr because of an "embedded null"
 combinedRaw = c(blogsRaw, newsRaw, twitterRaw)
 

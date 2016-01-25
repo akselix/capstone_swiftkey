@@ -31,7 +31,8 @@ shinyServer(function(input, output) {
         wordPrediction = fun.predict(input1, input2)
     
     })
-    output$predictedWords = renderTable(wordPrediction())
+    
+output$predictedWords = renderTable(wordPrediction())
     
 
 } )
