@@ -4,84 +4,91 @@
 # 2016-01-23
 
 # Libraries and options ####
+source('prepare_data.R')
+
+options(scipen=999)
 
 # Parameters ####
 
 # How many words to suggest
 numberOfSuggestions = 5
+# Input text
+inputText = 'according to us'
 
-# Input text ####
-inputText = 'how are you'
+# Parse tokens from input text ####
 
-# Transfer to quanteda corpus format and split into sentences
-fun.corpus = function(x) {
-    corpus(unlist(segment(x, 'sentence')))
-}
-
-# Tokenize
-fun.tokenize = function(x, ngramSize = 1, simplify = T) {
-    toLower(tokenize(x,
-                     removeNumbers = T,
-                     removePunct = T,
-                     removeSeparators = T,
-                     removeTwitter = T,
-                     ngrams = ngramSize,
-                     concatenator = ' ',
-                     simplify = simplify
-    ) )
-}
-
-# Parse individual tokens from input text
-fun.input = function(x) {
-    data_frame(word = fun.tokenize(corpus(x)))
-}
-
-fun.inputWords = function(x) {
-    if(nrow(x) == 0) {
-    input1 = NULL
-    input2 = NULL
-    }
-        if(nrow(x) < 2) {
-            input1 = NULL
-            input2 = tail(x, 1)
-        
-        }   else{
-                input1 = tail(x, 2)[1, ]
-                input2 = tail(x, 1)
-        }
-    return(list(input1, input2))
-}
-
-inputs = fun.inputWords(fun.input(inputText))
-input1 = unlist(inputs[1]) 
-input2 = unlist(inputs[2])
-
-# Prediction algorithm using stupid back off model ####
-fun.predict = function(x = NULL, y = NULL) {
-
-# Predict giving just the top 1-gram words if no input given
-    if(is.null(x) == T | is.null(y) == T) {
-        prediction = dfTrain1 %>%
-            select(NextWord)
+fun.input = function(inputText) {
     
+    # Tokenize with same function as training data
+    y = data_frame(word = fun.tokenize(corpus(inputText)))
+    
+    # Handle empty input
+    if(nrow(y) == 0) {
+        input1 = ""
+        input2 = ""
+    }
+        if(nrow(y) < 2) {
+            input1 = ""
+            input2 = tail(y, 1)
+        
+            # Get last 2 values    
+        }   else{
+                input1 = tail(y, 2)[1, ]
+                input2 = tail(y, 1)
+            }
+    
+    # Return list of inputs 
+    inputs = data_frame(words = unlist(rbind(input1, input2)))
+return(inputs)
+}
+
+# Get inputs as separate strings
+input1 = as.character(inputs[1, ])
+input2 = as.character(inputs[2, ])
+
+# Predict using stupid back off model ####
+
+fun.predict = function(...) {
+    
+    # Predict giving just the top 1-gram words if no input given
+    if(x == "" |  y == "") {
+        prediction = dfTrain1 %>%
+            select(NextWord) %>%
+            top_n(numberOfSuggestions)
+    }
         # Predict using 3-gram model
-        }else if(is.null(x) == F & is.null(y) == F & x %in% dfTrain3$word1 & y %in% dfTrain3$word2) {
-        prediction = dfTrain3 %>%
-            filter(word1 %in% x & word2 %in%y) %>%
-            select(NextWord)
+        if(input1 %in% dfTrain3$word1 & input2 %in% dfTrain3$word2) {
+            prediction = dfTrain3 %>%
+                filter(word1 %in% input1 & word2 %in% input2) %>%
+                select(NextWord) %>%
+                top_n(numberOfSuggestions)
         
             # Predict using 2-gram model
-            }else if(is.null(x) == T & y %in% dfTrain2$word1) {
+        }   else if(input2 %in% dfTrain2$word1) {
                 prediction = dfTrain2 %>%
-                filter(word1 %in% y) %>%
-                select(NextWord) 
-    
+                    filter(word1 %in% input2) %>%
+                    select(NextWord) %>%
+                    top_n(numberOfSuggestions)
+        
                 # If no prediction found, Predict giving just the top 1-gram words
-                }else{
-                    prediction = dfTrain1 %>%
-                    select(NextWord)
+            }   else{
+                prediction = dfTrain1 %>%
+                    select(NextWord) %>%
+                    top_n(numberOfSuggestions)
                 }
-return(head(prediction, numberOfSuggestions))
+    
+# Return predicted word in a data frame
+return(prediction)
 }
 
-fun.predict(input1, input2)
+
+
+
+
+
+
+
+
+
+
+

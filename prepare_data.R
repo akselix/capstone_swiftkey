@@ -77,19 +77,6 @@ dfTrain3 = data_frame(NextWord = train3)
 dfTrain3 = fun.frequency(dfTrain3, 1) %>%
     separate(NextWord, c('word1', 'word2', 'NextWord'), ' ')
 
-# Validation ####
-
-# Prepare validation sets
-valid = fun.corpus(valid)
-
-valid2 = fun.tokenize(valid, 2, T)
-valid2 = data_frame(NextWord = valid2) %>%
-    separate(NextWord, c('word1', 'NextWord'), ' ')
-
-valid3 = fun.tokenize(valid, 3, T)
-valid3 = data_frame(NextWord = valid3) %>%
-    separate(NextWord, c('word1', 'word2', 'NextWord'), ' ')
-
 # Save Data ####
 save(dfTrain1, file = './shiny/data/dfTrain1.RData')
 save(dfTrain2, file = './shiny/data/dfTrain2.RData')
