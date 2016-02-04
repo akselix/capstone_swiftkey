@@ -13,15 +13,24 @@ shinyUI(fluidPage(
     # Application title
     titlePanel("Word Predictor"),
     
-    # Text input
-    sidebarPanel(
-        textInput("text", label = h3("Please write some text"), value = "What about now") ),
     
+    sidebarPanel(
+        
+        # Text input
+        textInput("text", label = h3('Please insert some text'), value = ''),
+    
+        # Number of suggested words dropdown
+        selectInput('suggestions', label = h5('Number of Suggestions'), 
+                choices = list('1' = 1, '3' = 3, '5' = 5), 
+                selected = 3)
+    ),
+
+
     # Output predicted words
     mainPanel(
       fluidRow(
           column(12,
-                 tableOutput('table')
+                 tableOutput('predictionTable')
         )
       )
     )

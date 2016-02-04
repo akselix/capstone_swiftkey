@@ -4,8 +4,29 @@
 # 2016-01-23
 
 # Libraries and options ####
+library(dplyr)
+library(tidyr)
+library(quanteda)
 
-# source('prepare_data.R')
+# Transfer to quanteda corpus format and segment into sentences
+fun.corpus = function(x) {
+    corpus(unlist(segment(x, 'sentences')))
+}
+
+# Tokenize ####
+fun.tokenize = function(x, ngramSize = 1, simplify = T) {
+    
+    # Do some regex magic with qunteda
+    toLower(quanteda::tokenize(x,
+                               removeNumbers = T,
+                               removePunct = T,
+                               removeSeparators = T,
+                               removeTwitter = T,
+                               ngrams = ngramSize,
+                               concatenator = " ",
+                               simplify = simplify
+    ) )
+}
 
 # Parse tokens from input text ####
 
@@ -68,21 +89,6 @@ fun.predict = function(x, y) {
 # Return predicted word in a data frame
 return(prediction)
 }
-
-
-# Predictions ####
-
-# Input text sample 
-#inputText = 'According to the!?!'
-
-# Get inputs as separate strings
-#input1 = fun.input(inputText)[1, ]
-#input2 = fun.input(inputText)[2, ]
-
-
-# Predict
-#nSuggestions = 3
-#fun.predict(input1, input2)
 
 
 

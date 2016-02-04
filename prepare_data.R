@@ -4,11 +4,10 @@
 # 2015-12-20
 
 # Libraries and options ####
+source('shiny/prediction.R')
+
 library(readr)
-library(tidyr)
-library(dplyr)
 library(caTools)
-library(quanteda)
 
 # Read and prepare data ####
 
@@ -28,28 +27,12 @@ split = sample.split(combined, 0.8)
 train = subset(combined, split == T)
 valid = subset(combined, split == F)
     
-# Transfer to quanteda corpus format and segment into sentences
-fun.corpus = function(x) {
-    corpus(unlist(segment(x, 'sentences')))
-}
+# Tokenize ####
 
+# Transfer to quanteda corpus format and segment into sentences (prediction.R)
 train = fun.corpus(train)
 
-# Tokenize ####
-fun.tokenize = function(x, ngramSize = 1, simplify = T) {
-    
-    # Do some regex magic with qunteda
-    toLower(quanteda::tokenize(x,
-        removeNumbers = T,
-        removePunct = T,
-        removeSeparators = T,
-        removeTwitter = T,
-        ngrams = ngramSize,
-        concatenator = " ",
-        simplify = simplify
-    ) )
-}
-
+# Tokenize (prediction.R)
 train1 = fun.tokenize(train)
 train2 = fun.tokenize(train, 2)
 train3 = fun.tokenize(train, 3)
