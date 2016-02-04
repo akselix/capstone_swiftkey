@@ -8,31 +8,27 @@ library(shiny)
 library(dplyr)
 library(quanteda)
 
-
 # Load data and source files ####
-dfTrain1 <- load(file = 'data/dfTrain1.RData')
-dfTrain2 <- load(file = 'data/dfTrain2.RData')
-dfTrain3 <- load(file = 'data/dfTrain3.RData')
+dfTrain1 = readRDS(file = 'data/dfTrain1.rds')
+dfTrain2 = readRDS(file = 'data/dfTrain2.rds')
+dfTrain3 = readRDS(file = 'data/dfTrain3.rds')
 
+source('prepare_data.R')
 source('prediction.R')
 
 # Define application ####
 
 shinyServer(function(input, output) {
-
-    wordPrediction = reactive( {
-        
+    
+    # Update input and feed it to prediction function when user input changes 
+    prediction = reactive( {
         inputText = input$text
-        inputWords = fun.input(inputText)
-        inputs = fun.inputWords(inputWords)
-        input1 = unlist(inputs[1]) 
-        input2 = unlist(inputs[2])
-        
-        wordPrediction = fun.predict(input1, input2)
-    
-    })
-    
-output$predictedWords = renderTable(wordPrediction())
-    
+        input1 = fun.input(inputText)[1, ]
+        input2 = fun.input(inputText)[2, ]
+        prediction = fun.predict(input1, input2)
+    } ) 
+
+    # Output prediction table
+    output$table <- renderTable(prediction())
 
 } )

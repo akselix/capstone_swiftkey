@@ -9,15 +9,20 @@ library(shiny)
 # Define the Application ####
 
 shinyUI(fluidPage(
+    
     # Application title
     titlePanel("Word Predictor"),
     
-    sidebarPanel(
     # Text input
-    textInput("text", label = h3("Please write some text"), value = "")
-    ),
+    sidebarPanel(
+        textInput("text", label = h3("Please write some text"), value = "What about now") ),
     
+    # Output predicted words
     mainPanel(
-    tableOutput('predictedWords')
+      fluidRow(
+          column(12,
+                 tableOutput('table')
+        )
+      )
     )
 ))
