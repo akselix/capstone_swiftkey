@@ -8,7 +8,7 @@ source('shiny/prediction.R')
 source('prepare_data.R')
 
 # Input text sample 
-inputText = 'to'
+inputText = 'according to'
 
 # Get inputs as separate strings
 input1 = fun.input(inputText)[1, ]
@@ -49,8 +49,10 @@ fun.predictCloud = function(x, y, z = nSuggestions) {
     return(prediction[1:z, ])
 }
 
-#wordcloud(fun.predictCloud('to', 'you', 50)[, 1], fun.predictCloud('to', 'you', 50)[, 2])
 
+fun.wordcloud = function(x) {
+    wordcloud(x$NextWord, x$freq, colors = brewer.pal(8, 'Dark2'))
+}
 
 # Prediction without dplyr ####
 fun.predict2 <- function(x, y, z = nSuggestions) {

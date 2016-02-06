@@ -12,21 +12,31 @@ library(shiny)
 
 shinyServer(function(input, output) {
 
-    # Update input and feed it to prediction function when user input changes 
+    # Reactive statement for prediction function when user input changes 
     prediction =  reactive( {
         
-        inputText =  input$text
-        n = input$suggestions
-        
-        # Predict
+        # Get input
+        inputText = input$text
         input1 =  fun.input(inputText)[1, ]
         input2 =  fun.input(inputText)[2, ]
+        
+        # Predict
         prediction = fun.predict(input1, input2, 100)
     })
-        
+
 # Output prediction
-output$predictionTable = renderDataTable(prediction(), option = list(pageLength = 5,
-                                                                     lengthMenu = list(c(5, 15, 100, -1), c('5', '15', '100', 'All'))
-                                                                     )
-                                         )
+output$predictionTable = renderDataTable(prediction(),
+                            option = list(pageLength = 5,
+                                        lengthMenu = list(c(5, 15, 100), c('5', '15', '100')),
+                                        columnDefs = list(list(visible = F, targets = 1))
+                                        )
+                                    )
+# Output wordcloud
+#output$cloud = repeatable(
+output$cloud = renderPlot(wordcloud(
+                prediction()$NextWord,
+                prediction()$freq,
+                colors = brewer.pal(8, 'Dark2')
+                )
+            )
 })
