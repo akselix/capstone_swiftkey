@@ -20,39 +20,6 @@ input2
 nSuggestions = 5
 fun.predict(input1, input2)
 
-fun.predictCloud = function(x, y, z = nSuggestions) {
-    
-    # Predict giving just the top 1-gram words, if no input given
-    if(x == "" & y == "") {
-        prediction = dfTrain1 %>%
-            select(NextWord, freq)
-        
-        # Predict using 3-gram model
-    }   else if(x %in% dfTrain3$word1 & y %in% dfTrain3$word2) {
-        prediction = dfTrain3 %>%
-            filter(word1 %in% x & word2 %in% y) %>%
-            select(NextWord, freq)
-        
-        # Predict using 2-gram model
-    }   else if(y %in% dfTrain2$word1) {
-        prediction = dfTrain2 %>%
-            filter(word1 %in% y) %>%
-            select(NextWord, freq)
-        
-        # If no prediction found before, predict giving just the top 1-gram words
-    }   else{
-        prediction = dfTrain1 %>%
-            select(NextWord, freq)
-    }
-    
-    # Return predicted word in a data frame
-    return(prediction[1:z, ])
-}
-
-
-fun.wordcloud = function(x) {
-    wordcloud(x$NextWord, x$freq, colors = brewer.pal(8, 'Dark2'))
-}
 
 # Prediction without dplyr ####
 fun.predict2 <- function(x, y, z = nSuggestions) {

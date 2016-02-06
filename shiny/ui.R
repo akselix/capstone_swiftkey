@@ -7,7 +7,7 @@
 library(shiny)
 library(shinythemes)
 
-# Define the Application ####
+# Define the app ####
 
 shinyUI(fluidPage(
 
@@ -16,28 +16,30 @@ shinyUI(fluidPage(
     
     # Application title
     titlePanel("Word Predictor"),
-    
-    
-    sidebarPanel(
-        fluidRow(
-            column(10,
-                   
-        # Text input
-        textInput("text", label = h4('Please insert some text'), value = ''),
-        
-        # Table output
-        dataTableOutput('predictionTable')
-            )
-        )
-    ),
-    
-    mainPanel(
-        fluidRow(
-            column(12,
 
+# Sidebar ####    
+    sidebarLayout(
+        
+        sidebarPanel(
+        
+        # Text input
+        textInput("text", label = ('Please enter some text'), value = ''),
+        
+        # Number of words slider input
+        sliderInput('slider',
+                    'Maximum number of words',
+                    min = 0,  max = 1000,  value = 10),
+
+        # Table output
+        dataTableOutput('table')),
+
+# Mainpanel ####
+
+        mainPanel(
+        
         # Wordcloud output
-        plotOutput('cloud')
-            )
+        plotOutput('wordcloud')
         )
-    )
-) )
+    ) 
+)
+)

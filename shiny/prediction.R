@@ -61,7 +61,7 @@ return(inputs)
 
 # Predict using stupid backoff algorithm ####
 
-fun.predict = function(x, y, max = 1000) {
+fun.predict = function(x, y, n = 100) {
     
     # Predict giving just the top 1-gram words, if no input given
     if(x == "" & y == "") {
@@ -87,10 +87,5 @@ fun.predict = function(x, y, max = 1000) {
                 }
     
 # Return predicted word in a data frame
-return(prediction[1:max, ])
-}
-
-# Wordcloud ####
-fun.wordcloud = function(x) {
-    wordcloud(x$NextWord, x$freq, colors = brewer.pal(8, 'Dark2'))
+return(prediction[1:n, ])
 }

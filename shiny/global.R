@@ -3,6 +3,7 @@
 # Shiny script for loading data into global environment
 # 2016-02-05
 
+# Libraries and options ####
 library(shiny)
 
 # Load data  ####
