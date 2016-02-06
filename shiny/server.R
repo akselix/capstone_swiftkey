@@ -15,19 +15,18 @@ shinyServer(function(input, output) {
     # Update input and feed it to prediction function when user input changes 
     prediction =  reactive( {
         
-        #validate(
-         #   need(input$text != "", "No predictions, please write something.")
-        #)
-        
         inputText =  input$text
         n = input$suggestions
         
         # Predict
         input1 =  fun.input(inputText)[1, ]
         input2 =  fun.input(inputText)[2, ]
-        prediction = fun.predict(input1, input2, n)
+        prediction = fun.predict(input1, input2, 100)
     })
         
-    # Output prediction
-output$predictionTable = renderTable(prediction()) 
+# Output prediction
+output$predictionTable = renderDataTable(prediction(), option = list(pageLength = 5,
+                                                                     lengthMenu = list(c(5, 15, 100, -1), c('5', '15', '100', 'All'))
+                                                                     )
+                                         )
 })
