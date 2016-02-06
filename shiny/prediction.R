@@ -5,7 +5,6 @@
 
 # Libraries and options ####
 library(dplyr)
-library(tidyr)
 library(quanteda)
 
 # Transfer to quanteda corpus format and segment into sentences
@@ -31,66 +30,84 @@ fun.tokenize = function(x, ngramSize = 1, simplify = T) {
 # Parse tokens from input text ####
 
 fun.input = function(x) {
-    
-    # Tokenize with same function as training data
-    y = data_frame(word = fun.tokenize(corpus(x)))
-    
-    # Handle empty inputs
-    if(nrow(y) == 0) {
-        input1 = ""
-        input2 = ""
+   
+    # If empty input, put both words empty
+    if(x == "") {
+        input1 = data_frame(word = "")
+        input2 = data_frame(word = "")
     }
-       else if(nrow(y) < 2) {
-            input1 = ""
-            input2 = tail(y, 1)
+        # Tokenize with same functions as training data
+        if(length(x) ==1) {
+        y = data_frame(word = fun.tokenize(corpus(x)))
         
-            # Get last 2 values    
-        }   else{
-                input1 = tail(y, 2)[1, ]
-                input2 = tail(y, 1)
-            }
+        }
+            # If only one word, put first word empty
+            if (nrow(y) == 1) {
+            input1 = data_frame(word = "")
+            input2 = y
+        
+                # Get last 2 words    
+            }   else if (nrow(y) >= 1) {
+                    input1 = tail(y, 2)[1, ]
+                    input2 = tail(y, 1)
+                }
     
     #  Return data frame of inputs 
-    inputs = data_frame(words = unlist(rbind(input1, input2)))
+    inputs = data_frame(words = unlist(rbind(input1,input2)))
 return(inputs)
 }
 
 # Predict using stupid backoff algorithm ####
 
-fun.predict = function(x, y) {
+fun.predict <- function(x, y, z = nSuggestions) {
     
     # Predict giving just the top 1-gram words, if no input given
     if(x == "" & y == "") {
-        prediction = dfTrain1 %>%
-            select(NextWord) %>%
-            filter(row_number() <= nSuggestions)
+        prediction <- dfTrain1 %>%
+            select(NextWord)
             
         # Predict using 3-gram model
     }   else if(x %in% dfTrain3$word1 & y %in% dfTrain3$word2) {
-            prediction = dfTrain3 %>%
+            prediction <- dfTrain3 %>%
                 filter(word1 %in% x & word2 %in% y) %>%
-                select(NextWord) %>%
-                filter(row_number() <= nSuggestions)
+                select(NextWord)
         
             # Predict using 2-gram model
         }   else if(y %in% dfTrain2$word1) {
-                prediction = dfTrain2 %>%
+                prediction <- dfTrain2 %>%
                     filter(word1 %in% y) %>%
-                    select(NextWord) %>%
-                    filter(row_number() <= nSuggestions)
+                    select(NextWord)
                 
                 # If no prediction found before, predict giving just the top 1-gram words
             }   else{
-                    prediction = dfTrain1 %>%
-                        select(NextWord) %>%
-                        filter(row_number() <= nSuggestions)
+                    prediction <- dfTrain1 %>%
+                        select(NextWord)
                 }
     
 # Return predicted word in a data frame
-return(prediction)
+return(prediction[1:z, ])
 }
 
 
-
-
-
+fun.predict2 <- function(x, y, z = nSuggestions) {
+    
+    # Predict giving just the top 1-gram words, if no input given
+    if(x == "" & y == "") {
+        prediction = dfTrain1$NextWord
+        
+        # Predict using 3-gram model
+    }   else if(x %in% dfTrain3$word1 & y %in% dfTrain3$word2) {
+        prediction = subset(dfTrain3, dfTrain3$word1 %in% x & dfTrain3$ word2 %in% y, NextWord)
+        
+        # Predict using 2-gram model
+    }   else if(y %in% dfTrain2$word1) {
+        prediction = subset(dfTrain2, dfTrain2$word1 %in% y, NextWord)
+        
+        # If no prediction found before, predict giving just the top 1-gram words
+    }   else{
+        prediction <- dfTrain1$NextWord
+    }
+    
+    # Return predicted word in a data frame
+    return(prediction[1:z])
+}

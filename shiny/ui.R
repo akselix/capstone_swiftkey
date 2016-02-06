@@ -21,8 +21,8 @@ shinyUI(fluidPage(
     
         # Number of suggested words dropdown
         selectInput('suggestions', label = h5('Number of Suggestions'), 
-                choices = list('1' = 1, '3' = 3, '5' = 5), 
-                selected = 3)
+                choices = list('1' = 1, '3' = 3, '5' = 5, '10' =10), 
+                selected = 5)
     ),
 
 

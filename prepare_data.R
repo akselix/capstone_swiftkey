@@ -8,6 +8,7 @@ source('shiny/prediction.R')
 
 library(readr)
 library(caTools)
+library(tidyr)
 
 # Read and prepare data ####
 
