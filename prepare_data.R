@@ -61,8 +61,15 @@ dfTrain3 = data_frame(NextWord = train3)
 dfTrain3 = fun.frequency(dfTrain3) %>%
     separate(NextWord, c('word1', 'word2', 'NextWord'), " ")
 
+# Profanity filtering ####
+dirtySeven = c('shit', 'piss', 'fuck', 'cunt', 'cocksucker', 'motherfucker', 'tits.')
+dfTrain1 = filter(dfTrain1, !NextWord %in% dirtySeven)
+dfTrain2 = filter(dfTrain2, !word1 %in% dirtySeven &!NextWord %in% dirtySeven)
+dfTrain3 = filter(dfTrain3, !word1 %in% dirtySeven & !word2 %in% dirtySeven & !NextWord %in% dirtySeven)
+
+
 # Save Data ####
-#saveRDS(dfTrain1, file = './shiny/data/dfTrain1.rds')
-#saveRDS(dfTrain2, file = './shiny/data/dfTrain2.rds')
-#saveRDS(dfTrain3, file = './shiny/data/dfTrain3.rds')
+#saveRDS(dfTrain1, file = 'dfTrain1.rds')
+#saveRDS(dfTrain2, file = 'dfTrain2.rds')
+#saveRDS(dfTrain3, file = 'dfTrain3.rds')
 

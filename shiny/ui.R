@@ -36,10 +36,16 @@ shinyUI(fluidPage(
 # Mainpanel ####
 
         mainPanel(
+            wellPanel(
+                
+                # Link to the report
+                helpText(a('More information on the app', href='http://yle.fi/uutiset/' , target = '_blank')),
+                helpText(a('Code repository', href='http://yle.fi/uutiset/' , target = '_blank')),
         
         # Wordcloud output
         plotOutput('wordcloud')
         )
     ) 
+)
 )
 )
