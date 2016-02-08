@@ -39,8 +39,8 @@ shinyUI(fluidPage(
             wellPanel(
                 
                 # Link to the report
-                helpText(a('More information on the app', href='http://yle.fi/uutiset/' , target = '_blank')),
-                helpText(a('Code repository', href='http://yle.fi/uutiset/' , target = '_blank')),
+                helpText(a('More information on the app', href='http://rpubs.com/akselix/word_prediction' , target = '_blank')),
+                helpText(a('Code repository', href='https://github.com/akselix/capstone_swiftkey/tree/master' , target = '_blank')),
         
         # Wordcloud output
         plotOutput('wordcloud')
