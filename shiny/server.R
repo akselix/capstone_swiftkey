@@ -32,17 +32,17 @@ output$table = renderDataTable(prediction(),
                                         columnDefs = list(list(visible = F, targets = 1))
                                         #searching = F
                                         )
-                                    )
+                                )
 
 # Output word cloud ####
-
 wordcloud_rep = repeatable(wordcloud)
-output$wordcloud = renderPlot(wordcloud_rep(
-                prediction()$NextWord,
-                prediction()$freq,
-                colors = brewer.pal(8, 'Dark2'),
-                scale=c(4, 0.5),
-                max = 500
-                )
-            )
+output$wordcloud = renderPlot(
+                        wordcloud_rep(
+                            prediction()$NextWord,
+                            prediction()$freq,
+                            colors = brewer.pal(8, 'Dark2'),
+                            scale=c(4, 0.5),
+                            max.words = 300
+                            )
+                    )
 })

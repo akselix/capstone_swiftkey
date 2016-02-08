@@ -28,7 +28,8 @@ shinyUI(fluidPage(
         # Number of words slider input
         sliderInput('slider',
                     'Maximum number of words',
-                    min = 0,  max = 1000,  value = 10),
+                    min = 0,  max = 1000,  value = 10
+        ),
 
         # Table output
         dataTableOutput('table')),
@@ -36,11 +37,20 @@ shinyUI(fluidPage(
 # Mainpanel ####
 
         mainPanel(
+            
             wellPanel(
                 
-                # Link to the report
-                helpText(a('More information on the app', href='http://rpubs.com/akselix/word_prediction' , target = '_blank')),
-                helpText(a('Code repository', href='https://github.com/akselix/capstone_swiftkey/tree/master' , target = '_blank')),
+                # Link to report
+                helpText(a('More information on the app',
+                           href='http://rpubs.com/akselix/word_prediction', 
+                           target = '_blank')
+                ),
+                
+                # Link to repo
+                helpText(a('Code repository',
+                           href='https://github.com/akselix/capstone_swiftkey/tree/master/shiny',
+                           target = '_blank')
+                ),
         
         # Wordcloud output
         plotOutput('wordcloud')

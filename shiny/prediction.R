@@ -17,16 +17,18 @@ fun.corpus = function(x) {
 # Tokenize ####
 fun.tokenize = function(x, ngramSize = 1, simplify = T) {
     
-    # Do some regex magic with qunteda
-    toLower(quanteda::tokenize(x,
-                               removeNumbers = T,
-                               removePunct = T,
-                               removeSeparators = T,
-                               removeTwitter = T,
-                               ngrams = ngramSize,
-                               concatenator = " ",
-                               simplify = simplify
-    ) )
+    # Do some regex magic with quanteda
+    toLower(
+        quanteda::tokenize(x,
+            removeNumbers = T,
+            removePunct = T,
+            removeSeparators = T,
+            removeTwitter = T,
+            ngrams = ngramSize,
+            concatenator = " ",
+            simplify = simplify
+        ) 
+    )
 }
 
 # Parse tokens from input text ####
