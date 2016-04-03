@@ -21,7 +21,8 @@ More info here: (http://rpubs.com/akselix/word_prediction)
 4. ./shiny/ui.R
 	- Handles the input/output
   
-  **Preparing the data and validation**
+
+**Preparing the data and validation**
 
 1. ./shiny/prediction.R  
 	- Contains most of the functions used by the other scripts
